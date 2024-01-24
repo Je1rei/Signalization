@@ -15,31 +15,32 @@ public class Signalization : MonoBehaviour
     public void SignalizationOn()
     {
         _signal.Play();
-        _signal.volume = Mathf.MoveTowards(_signal.volume, _maxVolume, _speed * Time.deltaTime);
+        _currentCoroutine = ChangeVolume(_maxVolume);
 
-        if(_currentCoroutine != null)
-        {
-            StopCoroutine(_currentCoroutine);
-        }
+        StartCoroutine(_currentCoroutine);
     }
 
     public void SignalizationOff()
     {
-        _currentCoroutine = DecreaseVolume();
+        _currentCoroutine = ChangeVolume(_minVolume);
+
         StartCoroutine(_currentCoroutine);
+
+        if (_currentCoroutine == null)
+        {
+            _signal.Stop();
+        }
     }
 
-    private IEnumerator DecreaseVolume()
+    private IEnumerator ChangeVolume(float volume)
     {
-        while(_signal.volume > _minVolume)
+        while(_signal.volume != volume)
         {
-            _signal.volume = Mathf.MoveTowards(_signal.volume, _minVolume, _speed * Time.deltaTime);
+            _signal.volume = Mathf.MoveTowards(_signal.volume, volume, _speed * Time.deltaTime);
             yield return null;
         }
 
-        _signal.Stop();
-        _signal.volume = _minVolume;
-
+        _signal.volume = volume;
         _currentCoroutine = null;
     }
 }
