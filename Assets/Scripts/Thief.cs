@@ -4,6 +4,8 @@ using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+[RequireComponent (typeof(SpriteRenderer))]
+[RequireComponent (typeof(Rigidbody2D))]
 public class Thief : MonoBehaviour
 {
     [SerializeField] private float _speed;
@@ -11,14 +13,9 @@ public class Thief : MonoBehaviour
 
     private bool _isPassed;
 
-    private Rigidbody2D _rigidbody;
-    private SpriteRenderer _spriteRenderer;
-
     private void Awake()
     {
         _isPassed = false;
-        _rigidbody = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void FixedUpdate()
@@ -37,10 +34,10 @@ public class Thief : MonoBehaviour
 
     private void Move(float speed)
     {
-        Vector2 currentVelocity = _rigidbody.velocity;
+        Vector2 currentVelocity = GetComponent<Rigidbody2D>().velocity;
 
         Vector2 newVelocity = new Vector2(speed, currentVelocity.y);
-        _rigidbody.velocity = newVelocity;
+        GetComponent<Rigidbody2D>().velocity = newVelocity;
     }
 
     private void CrossBorderZone()
@@ -59,6 +56,6 @@ public class Thief : MonoBehaviour
 
     private void FlipSprite()
     {
-        _spriteRenderer.flipX = _isPassed;
+        GetComponent<SpriteRenderer>().flipX = _isPassed;
     }
 }
