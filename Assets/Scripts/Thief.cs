@@ -4,58 +4,52 @@ using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[RequireComponent (typeof(SpriteRenderer))]
-[RequireComponent (typeof(Rigidbody2D))]
+[RequireComponent(typeof(SpriteRenderer), typeof(Rigidbody2D))]
 public class Thief : MonoBehaviour
 {
     [SerializeField] private float _speed;
-    [SerializeField] private float _borderZone;
+    [SerializeField] private Transform[] _waypoints;
 
-    private bool _isPassed;
+    private int _currentWaypoint;
+
+    private Rigidbody2D _rigidbody;
+    private SpriteRenderer _spriteRenderer;
 
     private void Awake()
     {
-        _isPassed = false;
+        _currentWaypoint = 0;
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void FixedUpdate()
     {
-        CrossBorderZone();
-
-        if (_isPassed == false)
-        {
-            Move(_speed);
-        }
-        else if (_isPassed == true)
-        {
-            Move(-_speed);
-        }
+        Move();
     }
 
-    private void Move(float speed)
+    private Vector3 GetNextWaypoint()
     {
-        Vector2 currentVelocity = GetComponent<Rigidbody2D>().velocity;
+        _currentWaypoint = (++_currentWaypoint) % _waypoints.Length;
+        Vector3 waypoint = _waypoints[_currentWaypoint].transform.position;
 
-        Vector2 newVelocity = new Vector2(speed, currentVelocity.y);
-        GetComponent<Rigidbody2D>().velocity = newVelocity;
+        return waypoint;
     }
 
-    private void CrossBorderZone()
+    private void Move()
     {
-        if (transform.position.x >= _borderZone)
+        Transform currentWaypoint = _waypoints[_currentWaypoint];
+        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint.position, _speed * Time.deltaTime);
+
+        if (transform.position.x == currentWaypoint.position.x)
         {
-            _isPassed = true;
-            FlipSprite();
-        }
-        else if (transform.position.x <= -_borderZone)
-        {
-            _isPassed = false;
+            GetNextWaypoint();
             FlipSprite();
         }
     }
 
     private void FlipSprite()
     {
-        GetComponent<SpriteRenderer>().flipX = _isPassed;
+        _spriteRenderer.flipX = _currentWaypoint > 0 ? true : false;
     }
 }
