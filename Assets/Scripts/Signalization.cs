@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class Signalization : MonoBehaviour
 {
@@ -10,19 +9,18 @@ public class Signalization : MonoBehaviour
     private float _maxVolume = 1.0f;
     private float _minVolume = 0f;
 
-    private IEnumerator _currentCoroutine;
+    private Coroutine _currentCoroutine;
 
     public void SignalizationOn()
     {
         _signal.Play();
 
-        if(_currentCoroutine != null)
+        if (_currentCoroutine != null)
         {
             StopCoroutine(_currentCoroutine);
         }
 
-        _currentCoroutine = ChangeVolume(_maxVolume);
-        StartCoroutine(_currentCoroutine);
+        _currentCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
     }
 
     public void SignalizationOff()
@@ -32,25 +30,22 @@ public class Signalization : MonoBehaviour
             StopCoroutine(_currentCoroutine);
         }
 
-        _currentCoroutine = ChangeVolume(_minVolume);
-
-        if (_currentCoroutine == null)
-        {
-            _signal.Stop();
-        }
-
-        StartCoroutine(_currentCoroutine);
+        _currentCoroutine = StartCoroutine(ChangeVolume(_minVolume));
     }
 
     private IEnumerator ChangeVolume(float volume)
     {
-        while(_signal.volume != volume)
+        while (_signal.volume != volume)
         {
             _signal.volume = Mathf.MoveTowards(_signal.volume, volume, _speed * Time.deltaTime);
             yield return null;
         }
 
         _signal.volume = volume;
-        _currentCoroutine = null;
+
+        if (volume == _minVolume)
+        {
+            _signal.Stop();
+        }
     }
 }
