@@ -10,15 +10,15 @@ public class House : MonoBehaviour
     {
         if (house.gameObject.TryGetComponent(out Thief thief))
         {
-            _signalization.SignalizationOn();
+            _signalization.ToggleSignalization(isActivate : true);
         }
     }
 
     private void OnTriggerExit2D(Collider2D house)
     {
-        if (house.gameObject.TryGetComponent(out Thief other))
+        if (house.gameObject.TryGetComponent(out Thief thief))
         {
-            _signalization.SignalizationOff();
+            _signalization.ToggleSignalization(isActivate: false);
         }
     }
 }

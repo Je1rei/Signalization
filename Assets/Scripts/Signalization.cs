@@ -11,26 +11,21 @@ public class Signalization : MonoBehaviour
 
     private Coroutine _currentCoroutine;
 
-    public void SignalizationOn()
+    public void ToggleSignalization(bool isActivate)
     {
-        _signal.Play();
+        float targetVolume = isActivate ? _maxVolume : _minVolume;
+
+        if (isActivate)
+        {
+            _signal.Play();
+        }
 
         if (_currentCoroutine != null)
         {
             StopCoroutine(_currentCoroutine);
         }
 
-        _currentCoroutine = StartCoroutine(ChangeVolume(_maxVolume));
-    }
-
-    public void SignalizationOff()
-    {
-        if (_currentCoroutine != null)
-        {
-            StopCoroutine(_currentCoroutine);
-        }
-
-        _currentCoroutine = StartCoroutine(ChangeVolume(_minVolume));
+        _currentCoroutine = StartCoroutine(ChangeVolume(targetVolume));
     }
 
     private IEnumerator ChangeVolume(float volume)
